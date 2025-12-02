@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <title>Orders</title>
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2>Admin Panel</h2>
+      <a href="index.html">Dashboard</a>
+      <a href="add-product.html">Add Product</a>
+      <a href="edit-product.html">Edit Product</a>
+      <a href="orders.html" class="active">Orders</a>
+    </div>
+
+    <div class="main">
+      <h1>Order List</h1>
+
+      <div class="card">
+        <table>
+          <tr>
+            <th>Order ID</th>
+            <th>Name</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+          <tr>
+            <td>#1023</td>
+            <td>Samsul</td>
+            <td>Rp 350.000</td>
+            <td>Pending</td>
+            <td>
+              <button onclick="location.href='order-detail.html'">
+                Detail
+              </button>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pesanan Saya - Simple E-Commerce</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header class="bg-white shadow-sm p-3 mb-4">
+      <div class="container d-flex justify-content-between align-items-center">
+        <h3 class="m-0">
+          <i class="bi bi-shop text-primary me-2"></i>Simple E-Commerce
+        </h3>
+        <nav class="d-flex gap-3">
+          <a href="index.html" class="text-dark">Beranda</a>
+          <a href="cart.html" class="text-dark">Keranjang</a>
+          <a href="login.html" class="text-dark">Login</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="page-header mb-4">
+        <h3 class="fw-bold">
+          <i class="bi bi-box-seam me-2"></i> Pesanan Saya
+        </h3>
+        <p class="text-muted mb-0">Riwayat pesanan dan transaksi Anda</p>
+      </div>
+
+      <!-- Jika tidak ada pesanan -->
+      <div
+        id="orders-empty"
+        class="alert alert-info d-flex align-items-center"
+        style="display: none"
+      >
+        <i class="bi bi-info-circle me-2"></i>
+        Belum ada pesanan. Mulai belanja sekarang!
+      </div>
+
+      <div id="start-shopping" class="text-center mt-4" style="display: none">
+        <a href="index.html" class="btn btn-primary">
+          <i class="bi bi-shop me-2"></i> Mulai Belanja
+        </a>
+      </div>
+
+      <!-- Jika ada pesanan -->
+      <div id="orders-summary" class="row g-3 mb-4" style="display: none">
+        <div class="col-md-4">
+          <div class="card text-center shadow-sm h-100">
+            <div class="card-body">
+              <i class="bi bi-cart-check text-primary fs-3 mb-2"></i>
+              <h5 id="summary-total-orders">0</h5>
+              <small class="text-muted">Total Pesanan</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card text-center shadow-sm h-100">
+            <div class="card-body">
+              <i class="bi bi-cash-coin text-success fs-3 mb-2"></i>
+              <h5 id="summary-total-spent">Rp 0</h5>
+              <small class="text-muted">Total Belanja</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card text-center shadow-sm h-100">
+            <div class="card-body">
+              <i class="bi bi-clock-history text-info fs-3 mb-2"></i>
+              <h5 id="summary-last-order">-</h5>
+              <small class="text-muted">Pesanan Terakhir</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders Table -->
+      <div id="orders-table-card" class="card shadow-sm" style="display: none">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="px-4 py-3">ID Pesanan</th>
+                  <th class="py-3">Total</th>
+                  <th class="py-3">Tanggal</th>
+                  <th class="py-3 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="orders-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="text-center p-3 mt-4 bg-light">
+      © 2025 Simple E-Commerce
+    </footer>
+
+    <script>
+      // Ambil pesanan dari localStorage
+      function getOrders() {
+        return JSON.parse(localStorage.getItem("orders")) || [];
+      }
+
+      function renderOrders() {
+        const orders = getOrders();
+        const emptyBox = document.getElementById("orders-empty");
+        const startShopping = document.getElementById("start-shopping");
+        const summaryBox = document.getElementById("orders-summary");
+        const tableCard = document.getElementById("orders-table-card");
+        const tableBody = document.getElementById("orders-body");
+
+        if (orders.length === 0) {
+          emptyBox.style.display = "flex";
+          startShopping.style.display = "block";
+          summaryBox.style.display = "none";
+          tableCard.style.display = "none";
+          return;
+        }
+
+        summaryBox.style.display = "flex";
+        tableCard.style.display = "block";
+
+        // Hitung ringkasan
+        document.getElementById("summary-total-orders").textContent =
+          orders.length;
+
+        const totalSpent = orders.reduce((sum, o) => sum + o.total, 0);
+        document.getElementById("summary-total-spent").textContent =
+          "Rp " + totalSpent.toLocaleString("id-ID");
+
+        const lastOrderDate = orders[orders.length - 1].date;
+        document.getElementById("summary-last-order").textContent =
+          lastOrderDate;
+
+        // TABEL PESANAN
+        tableBody.innerHTML = "";
+        orders.forEach((order) => {
+          tableBody.innerHTML += `
+            <tr>
+                <td class="px-4 py-3">
+                    <span class="badge bg-primary">#${order.id}</span>
+                </td>
+                <td class="py-3 fw-bold text-success">
+                    Rp ${order.total.toLocaleString("id-ID")}
+                </td>
+                <td class="py-3">
+                    <small class="text-muted">
+                        <i class="bi bi-clock me-1"></i>${order.date}
+                    </small>
+                </td>
+                <td class="py-3 text-center">
+                    <a 
+                        href="order_detail.html?id=${order.id}" 
+                        class="btn btn-sm btn-outline-primary"
+                    >
+                        <i class="bi bi-eye"></i> Detail
+                    </a>
+                </td>
+            </tr>
+        `;
+        });
+      }
+
+      renderOrders();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
